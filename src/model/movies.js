@@ -15,18 +15,20 @@ export class MovieModel {
     if (genre) {
       const lowerCaseGenre = genre.toLowerCase()
 
-      const [genres] = await connection.query(
-        'SELECT * FROM genre WHERE LOWER(name) = ?', [lowerCaseGenre]
-      )
+      // const [genres] = await connection.query(
+      //   'SELECT * FROM genre WHERE LOWER(name) = ?', [lowerCaseGenre]
+      // )
 
-      if (genres.length === 0) return { error: 'Movies not found' }
+      // if (genres.length === 0) return { error: 'Movies not found' }
 
-      const [{ id }] = genres
+      // const [{ id }] = genres
 
       const [moviesByGenre] = await connection.query(
-        `SELECT title, year, director, poster, rate, BIN_TO_UUID(id) id FROM movie m
-         JOIN movie_genres mg ON mg.movie_id = m.id AND mg.genre_id = ?`, [id]
+        'SELECT title, year, director, poster, rate, id FROM vw_movies_by_genre WHERE genre_name = ?;',
+        [lowerCaseGenre]
       )
+
+      if (moviesByGenre.length === 0) return { error: 'Movies not found' }
 
       return moviesByGenre
     }
