@@ -1,0 +1,18 @@
+GET http://192.168.1.109:5000/movies
+
+###
+GET http://192.168.1.109:5000/movies?genre=DRAMA
+
+### create new movie
+POST http://192.168.1.109:5000/movies
+Content-Type: application/json
+
+{
+  "title": "Jurassic Park",
+  "year": 1993,
+  "director": "Steven Spielberg",
+  "duration": 127,
+  "poster": "https://vice-press.com/cdn/shop/products/Jurassic-Park-Editions-poster-florey.jpg?v=1654518755&width=1024",
+  "genre": ["Adventure", "Sci-Fi"],
+  "rate": 8.1
+}

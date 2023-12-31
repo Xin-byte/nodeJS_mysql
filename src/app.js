@@ -12,6 +12,6 @@ const HOST = process.env.HOST ?? '192.168.1.109'
 app.use('/movies', movieRouter())
 
 // listen server
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
   console.log(`🚀 Server start on http://${HOST}:${PORT}/movies`)
 })
