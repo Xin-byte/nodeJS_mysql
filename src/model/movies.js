@@ -20,7 +20,7 @@ export class MovieModel {
       const lowerCaseGenre = genre.toLowerCase()
 
       const [moviesByGenre] = await connection.query(
-        'SELECT title, year, director, poster, rate, id FROM vw_movies_by_genre WHERE genre_name = ?;',
+        'SELECT id, title, year, director, poster, rate FROM vw_movies_by_genre WHERE genre_name = ?;',
         [lowerCaseGenre]
       )
 
@@ -32,7 +32,7 @@ export class MovieModel {
     }
 
     const [result] = await connection.query(
-      'SELECT title, year, director, poster, rate, BIN_TO_UUID(id) id FROM movie;'
+      'SELECT BIN_TO_UUID(id) id, title, year, director, poster, rate FROM movie;'
     )
 
     const genres = await this.getGenre(result)
@@ -43,7 +43,7 @@ export class MovieModel {
 
   static async getById ({ id }) {
     const [result] = await connection.query(
-      `SELECT title, year, director, poster, rate, id 
+      `SELECT id, title, year, director, poster, rate 
       FROM vw_movies_with_dense_rank m
       WHERE m.dense_rank = ?
       LIMIT 1`,
@@ -100,10 +100,12 @@ export class MovieModel {
     }
 
     const [movie] = await connection.query(
-      'SELECT title, year, director, poster, rate, BIN_TO_UUID(id) id FROM movie WHERE id = UUID_TO_BIN(?);',
+      'SELECT BIN_TO_UUID(id) id, title, year, director, poster, rate FROM movie WHERE id = UUID_TO_BIN(?);',
       [uuid]
     )
+    const genres = await this.getGenre()
+    const movieWithGenre = { ...movie[0], genre: genres[movie[0].title] }
 
-    return movie[0]
+    return movieWithGenre
   }
 }
