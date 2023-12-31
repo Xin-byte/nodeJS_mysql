@@ -1,8 +1,18 @@
 import { connection } from '../config.js'
 
 export class MovieModel {
-  static async getGenre ({ title }) {
+  static async getGenre () {
+    const [genre] = await connection.query(
+      'SELECT genre_name name, title FROM vw_movies_by_genre'
+    )
 
+    return genre.reduce((acc, { name, title }) => {
+      acc[title] ??= []
+      acc[title].push(name)
+
+      return acc
+    }
+    , {})
   }
 
   static async getAll ({ genre }) {
@@ -15,15 +25,20 @@ export class MovieModel {
       )
 
       if (moviesByGenre.length === 0) return { error: 'Movies not found' }
+      const genres = await this.getGenre(moviesByGenre)
+      const moviesWithGenre = moviesByGenre.map(movie => ({ ...movie, genre: genres[movie.title] }))
 
-      return moviesByGenre
+      return moviesWithGenre
     }
 
     const [result] = await connection.query(
       'SELECT title, year, director, poster, rate, BIN_TO_UUID(id) id FROM movie;'
     )
 
-    return result
+    const genres = await this.getGenre(result)
+    const resultWithGenre = result.map(movie => ({ ...movie, genre: genres[movie.title] }))
+
+    return resultWithGenre
   }
 
   static async getById ({ id }) {
@@ -40,10 +55,10 @@ export class MovieModel {
     return result
   }
 
-  static async getGenreIds (genres) {
+  static async getGenreIds ({ genreInput }) {
     const [ids] = await connection.query(
       'SELECT id FROM genre WHERE name IN (?);',
-      [genres]
+      [genreInput]
     )
 
     return ids.map(({ id }) => id)
@@ -62,7 +77,7 @@ export class MovieModel {
 
     const uuid = crypto.randomUUID()
 
-    const genreIds = await this.getGenreIds(genreInput)
+    const genreIds = await this.getGenreIds({ genreInput })
     const movieIdBinary = `UUID_TO_BIN('${uuid}')`
     const values = genreIds.map(id => `(${movieIdBinary}, ${id})`)
 
