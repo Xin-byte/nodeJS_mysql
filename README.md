@@ -1,4 +1,4 @@
-# Your API Name
+# MoviesAPI
 
 Movies API - Brief description of your movies API.
 
@@ -12,10 +12,6 @@ This project is a movies API that provides information about movies, actors, dir
 - **Genre Search:** Filter movies by genre.
 - **Actor and Director Information:** Access data about the actors and directors of the movies.
 - **Ratings and Reviews:** Discover user ratings and reviews.
-
-## Documentation
-
-For details on available endpoints and how to use the API, check out our [documentation](link-to-your-documentation).
 
 ## Usage Examples
 
