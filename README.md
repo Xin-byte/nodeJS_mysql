@@ -13,12 +13,26 @@ This project is a movies API that provides information about movies, actors, dir
 - **Actor and Director Information:** Access data about the actors and directors of the movies.
 - **Ratings and Reviews:** Discover user ratings and reviews.
 
+## .env configuration
+
+**Create `.env`:**
+
+after add the next config:
+
+```dotenv
+PORT="YOURPORT"
+HOST="YOURHOST"
+PASSWORD="YOURPASSWORD"
+USER="YOURUSER"
+DATABASE="YOURDATABASE"
+```
+
 ## Usage Examples
 
 Here are some examples of how you can use the API:
 
-### Get details of a movie by ID
+### Get details of all movies
 
 ```bash
-curl -X GET http://your-api/movies/123
+curl -X GET http:// http://192.168.1.109:5000/movies
 ```
