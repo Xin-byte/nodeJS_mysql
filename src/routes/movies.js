@@ -13,8 +13,11 @@ export const movieRouter = () => {
   // create new movie
   moviesRouter.post('/', MovieController.create)
 
-  // deleted movie
+  // delete movie
   moviesRouter.delete('/:id', MovieController.delete)
+
+  // update movie
+  moviesRouter.patch('/:id', MovieController.update)
 
   return moviesRouter
 }

@@ -30,7 +30,8 @@ export class MovieModel {
         [lowerCaseGenre]
       )
 
-      if (moviesByGenre.length === 0) return { error: 'Movies not found' }
+      if (moviesByGenre.length === 0) return []
+
       const genres = await this.getGenre(moviesByGenre)
       const moviesWithGenre = moviesByGenre
         .map(({ id, title, ...movie }) => ({ id, title, ...movie, genre: genres[title] }))
@@ -53,12 +54,13 @@ export class MovieModel {
     const [result] = await connection.query(
       `SELECT id, title, year, director, poster, rate 
       FROM vw_movies_with_dense_rank m
-      WHERE m.dense_rank = ?
+      WHERE m.dense_rank = ? OR  id = ?
       LIMIT 1`,
-      [id]
+      [id, id]
     )
 
-    if (result.length === 0) return { error: 'Movie not found' }
+    if (result.length === 0) return null
+
     const genre = await this.getGenre(result)
     const movieWithGenre = { ...result[0], genre: genre[result[0].title] }
 
@@ -113,10 +115,40 @@ export class MovieModel {
 
   // delete movie
   static async delete ({ id }) {
-    const deletedMovie = await connection.query(
-      'DELETE FROM movie WHERE id = UUID_TO_BIN(?)', [id]
+    const [{ affectedRows: deletedCount }] = await connection.query(
+      'DELETE FROM movie WHERE id = UUID_TO_BIN(?);', [id]
     )
 
-    console.log(deletedMovie)
+    return deletedCount > 0
+  }
+
+  // update movie
+  static async update ({ id, input }) {
+    const { genre: genreInput = [], ...rest } = input
+
+    try {
+      const [{ affectedRows: updated }] = await connection.query(
+        'UPDATE movie SET ? WHERE id = UUID_TO_BIN(?)', [rest, id]
+      )
+
+      if (updated > 0 && genreInput.length !== 0) {
+        const ids = await this.getGenreIds({ genreInput })
+        const values = ids.map(newId => `(UUID_TO_BIN('${id}'), ${newId})`)
+
+        await connection.query(
+          'DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?)', [id]
+        )
+
+        await connection.query(
+        `INSERT INTO movie_genres(movie_id, genre_id) VALUES ${values.join(',')}`
+        )
+      }
+
+      if (updated > 0) return this.getById({ id })
+
+      return null
+    } catch (error) {
+      throw new Error('Error updating Movie', { cause: error })
+    }
   }
 }

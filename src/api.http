@@ -8,14 +8,28 @@ POST http://192.168.1.109:5000/movies
 Content-Type: application/json
 
 {
-  "title": "The Social Network",
-  "year": 2010,
-  "director": "David Fincher",
-  "duration": 120,
-  "poster": "https://i.pinimg.com/originals/7e/37/b9/7e37b994b613e94cba64f307b1983e39.jpg",
-  "genre": ["Biography", "Drama"],
-  "rate": 7.7
+  "title": "The Shawshank Redemption",
+  "year": 1994,
+  "director": "Frank Darabont",
+  "duration": 142,
+  "poster": "https://i.ebayimg.com/images/g/4goAAOSwMyBe7hnQ/s-l1200.webp",
+  "genre": ["Drama"],
+  "rate": 9.3
 }
 
 ### deleted movie
-DELETE http://192.168.1.109:5000/movies/cf2b114-d5fe-466b-9dde-e447b955e3e7
+DELETE http://192.168.1.109:5000/movies/8fe3264a-496f-4241-a390-9821708579be
+
+### uptedes movie
+PATCH http://192.168.1.109:5000/movies/b32ce701-a9b8-11ee-8728-50ebf6d2c671
+Content-Type: application/json
+
+{
+  "year": 2023,
+  "director": "Fran Torres",
+  "genre": [
+    "Drama",
+      "Action",
+      "Crime"
+  ]
+}
