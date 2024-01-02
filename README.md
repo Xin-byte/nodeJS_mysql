@@ -33,6 +33,30 @@ Here are some examples of how you can use the API:
 
 ### Get details of all movies
 
-```bash
-curl -X GET http:// http://192.168.1.109:5000/movies
+```http
+GET http://localhost:5000/movies
+```
+
+### Get details of movies by genre
+
+```http
+GET http://localhost:5000/movies?genre=DRAMA
+```
+
+### Create a new movie
+
+```http
+POST http://localhost:5000/movies
+
+Content-Type: application/json
+
+{
+  "title": "The Social Network",
+  "year": 2010,
+  "director": "David Fincher",
+  "duration": 120,
+  "poster": "https://i.pinimg.com/originals/7e/37/b9/7e37b994b613e94cba64f307b1983e39.jpg",
+  "genre": ["Biography", "Drama"],
+  "rate": 7.7
+}
 ```
