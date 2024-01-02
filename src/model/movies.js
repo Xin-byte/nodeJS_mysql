@@ -1,7 +1,7 @@
 import { connection } from '../config.js'
 
 export class MovieModel {
-  static async getGenre () {
+  static async getGenre ({ title }) {
     const [genre] = await connection.query(
       'SELECT genre_name name, title FROM vw_movies_by_genre'
     )
@@ -13,6 +13,15 @@ export class MovieModel {
       return acc
     }
     , {})
+  }
+
+  static async getGenreIds ({ genreInput }) {
+    const [ids] = await connection.query(
+      'SELECT id FROM genre WHERE name IN (?);',
+      [genreInput]
+    )
+
+    return ids.map(({ id }) => id)
   }
 
   static async getAll ({ genre }) {
@@ -51,17 +60,11 @@ export class MovieModel {
     )
 
     if (result.length === 0) return { error: 'Movie not found' }
+    const genre = await this.getGenre(result)
+    const { title, ...movie } = result[0]
+    const movieWithGenre = { ...movie, genre: genre[title] }
 
-    return result
-  }
-
-  static async getGenreIds ({ genreInput }) {
-    const [ids] = await connection.query(
-      'SELECT id FROM genre WHERE name IN (?);',
-      [genreInput]
-    )
-
-    return ids.map(({ id }) => id)
+    return movieWithGenre
   }
 
   static async create ({ input }) {
