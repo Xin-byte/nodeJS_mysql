@@ -15,9 +15,9 @@ This project is a movies API that provides information about movies, actors, dir
 
 ## .env configuration
 
-**Create `.env`:**
+- **Create** `.env`
 
-after add the next config:
+- after add the next config:
 
 ```dotenv
 PORT="YOURPORT"
