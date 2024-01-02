@@ -66,8 +66,9 @@ export class MovieModel {
   }
 
   static async create ({ input }) {
+    // genre is an array
     const {
-      genre: genreInput, // genre is an array
+      genre: genreInput,
       title,
       year,
       duration,
