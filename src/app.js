@@ -1,12 +1,13 @@
 import express, { json } from 'express'
 import { movieRouter } from './routes/movies.js'
+import 'dotenv/config'
 // init
 const app = express()
 // middlewares
 app.use(json())
 // config
-const PORT = process.env.PORT ?? 5000
-const HOST = process.env.HOST ?? '192.168.1.109'
+const PORT = process.env.PORT
+const HOST = process.env.HOST
 
 // routes
 app.use('/movies', movieRouter())

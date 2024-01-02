@@ -110,4 +110,13 @@ export class MovieModel {
 
     return movieWithGenre
   }
+
+  // delete movie
+  static async delete ({ id }) {
+    const deletedMovie = await connection.query(
+      'DELETE FROM movie WHERE id = UUID_TO_BIN(?)', [id]
+    )
+
+    console.log(deletedMovie)
+  }
 }

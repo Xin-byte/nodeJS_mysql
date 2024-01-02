@@ -23,4 +23,12 @@ export class MovieController {
 
     res.status(201).json(newMovie)
   }
+
+  // delete movie
+  static async delete (req, res) {
+    const { id } = req.params
+    const deletedMovie = await MovieModel.delete({ id })
+
+    res.json(deletedMovie)
+  }
 }

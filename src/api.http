@@ -17,4 +17,5 @@ Content-Type: application/json
   "rate": 7.7
 }
 
-### 
+### deleted movie
+DELETE http://192.168.1.109:5000/movies/cf2b114-d5fe-466b-9dde-e447b955e3e7
