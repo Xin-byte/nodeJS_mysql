@@ -8,13 +8,13 @@ POST http://192.168.1.109:5000/movies
 Content-Type: application/json
 
 {
-  "title": "Titanic",
-  "year": 1997,
-  "director": "James Cameron",
-  "duration": 195,
-  "poster": "https://i.pinimg.com/originals/42/42/65/4242658e6f1b0d6322a4a93e0383108b.png",
-  "genre": ["Drama", "Romance"],
-  "rate": 7.8
+  "title": "The Social Network",
+  "year": 2010,
+  "director": "David Fincher",
+  "duration": 120,
+  "poster": "https://i.pinimg.com/originals/7e/37/b9/7e37b994b613e94cba64f307b1983e39.jpg",
+  "genre": ["Biography", "Drama"],
+  "rate": 7.7
 }
 
 ### 

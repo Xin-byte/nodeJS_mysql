@@ -1,18 +1,15 @@
 import { connection } from '../config.js'
 
 export class MovieModel {
-  static async getGenre ({ title }) {
+  static async getGenre () {
     const [genre] = await connection.query(
-      'SELECT genre_name name, title FROM vw_movies_by_genre'
+      'SELECT title, GROUP_CONCAT(genre_name) genres FROM vw_movies_by_genre GROUP BY title'
     )
 
-    return genre.reduce((acc, { name, title }) => {
-      acc[title] ??= []
-      acc[title].push(name)
-
+    return genre.reduce((acc, { title, genres }) => {
+      acc[title] = genres.split(',')
       return acc
-    }
-    , {})
+    }, {})
   }
 
   static async getGenreIds ({ genreInput }) {
@@ -35,7 +32,8 @@ export class MovieModel {
 
       if (moviesByGenre.length === 0) return { error: 'Movies not found' }
       const genres = await this.getGenre(moviesByGenre)
-      const moviesWithGenre = moviesByGenre.map(movie => ({ ...movie, genre: genres[movie.title] }))
+      const moviesWithGenre = moviesByGenre
+        .map(({ id, title, ...movie }) => ({ id, title, ...movie, genre: genres[title] }))
 
       return moviesWithGenre
     }
@@ -45,7 +43,8 @@ export class MovieModel {
     )
 
     const genres = await this.getGenre(result)
-    const resultWithGenre = result.map(movie => ({ ...movie, genre: genres[movie.title] }))
+    const resultWithGenre = result
+      .map(({ id, title, ...movie }) => ({ id, title, ...movie, genre: genres[title] }))
 
     return resultWithGenre
   }
@@ -61,8 +60,7 @@ export class MovieModel {
 
     if (result.length === 0) return { error: 'Movie not found' }
     const genre = await this.getGenre(result)
-    const { title, ...movie } = result[0]
-    const movieWithGenre = { ...movie, genre: genre[title] }
+    const movieWithGenre = { ...result[0], genre: genre[result[0].title] }
 
     return movieWithGenre
   }
