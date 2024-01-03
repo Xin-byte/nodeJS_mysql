@@ -1,4 +1,5 @@
 import { connection } from '../config.js'
+import { uuidToBin } from '../helpers/index.js'
 
 export class MovieModel {
   static async getGenre () {
@@ -127,27 +128,36 @@ export class MovieModel {
     const { genre: genreInput = [], ...rest } = input
 
     try {
+      await connection.beginTransaction()
+
       const [{ affectedRows: updated }] = await connection.query(
-        'UPDATE movie SET ? WHERE id = UUID_TO_BIN(?)', [rest, id]
+        'UPDATE movie SET ? WHERE id = UUID_TO_BIN(?)',
+        [rest, id]
       )
 
       if (updated > 0 && genreInput.length !== 0) {
-        const ids = await this.getGenreIds({ genreInput })
-        const values = ids.map(newId => `(UUID_TO_BIN('${id}'), ${newId})`)
+        const genreIds = await this.getGenreIds({ genreInput })
+        const values = genreIds.map(newId => [uuidToBin(id), newId])
 
         await connection.query(
-          'DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?)', [id]
+          'DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?)',
+          [id]
         )
 
         await connection.query(
-        `INSERT INTO movie_genres(movie_id, genre_id) VALUES ${values.join(',')}`
+          'INSERT INTO movie_genres(movie_id, genre_id) VALUES ?',
+          [values]
         )
       }
+
+      await connection.commit()
 
       if (updated > 0) return this.getById({ id })
 
       return null
     } catch (error) {
+      await connection.rollback()
+      console.error(error)
       throw new Error('Error updating Movie', { cause: error })
     }
   }
