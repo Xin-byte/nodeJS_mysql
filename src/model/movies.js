@@ -83,35 +83,39 @@ export class MovieModel {
     const uuid = crypto.randomUUID()
 
     const genreIds = await this.getGenreIds({ genreInput })
-    const movieIdBinary = `UUID_TO_BIN('${uuid}')`
-    const values = genreIds.map(id => `(${movieIdBinary}, ${id})`)
 
     try {
+      await connection.beginTransaction()
+
       await connection.query(
         `INSERT INTO movie (id, title, year, director, duration, poster, rate)
-         VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?);`,
+        VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?);`,
         [uuid, title, year, director, duration, poster, rate]
       )
-    } catch (error) {
-      throw new Error('Error creating movie', { cause: error })
-    }
 
-    try {
+      const values = genreIds.map(id => [uuidToBin(uuid), id])
+
       await connection.query(
-        `INSERT INTO movie_genres (movie_id, genre_id) VALUES ${values.join(',')};`
+        'INSERT INTO movie_genres (movie_id, genre_id) VALUES ?;',
+        [values]
       )
+
+      const [movie] = await connection.query(
+        'SELECT BIN_TO_UUID(id) id, title, year, director, poster, rate FROM movie WHERE id = UUID_TO_BIN(?);',
+        [uuid]
+      )
+
+      await connection.commit()
+
+      const genres = await this.getGenre()
+      const movieWithGenre = { ...movie[0], genre: genres[movie[0].title] }
+
+      return movieWithGenre
     } catch (error) {
+      await connection.rollback()
+      console.error(error)
       throw new Error('Error creating movie', { cause: error })
     }
-
-    const [movie] = await connection.query(
-      'SELECT BIN_TO_UUID(id) id, title, year, director, poster, rate FROM movie WHERE id = UUID_TO_BIN(?);',
-      [uuid]
-    )
-    const genres = await this.getGenre()
-    const movieWithGenre = { ...movie[0], genre: genres[movie[0].title] }
-
-    return movieWithGenre
   }
 
   // delete movie
@@ -131,7 +135,7 @@ export class MovieModel {
       await connection.beginTransaction()
 
       const [{ affectedRows: updated }] = await connection.query(
-        'UPDATE movie SET ? WHERE id = UUID_TO_BIN(?)',
+        'UPDATE movie SET ? WHERE id = UUID_TO_BIN(?);',
         [rest, id]
       )
 
@@ -140,12 +144,12 @@ export class MovieModel {
         const values = genreIds.map(newId => [uuidToBin(id), newId])
 
         await connection.query(
-          'DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?)',
+          'DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?);',
           [id]
         )
 
         await connection.query(
-          'INSERT INTO movie_genres(movie_id, genre_id) VALUES ?',
+          'INSERT INTO movie_genres(movie_id, genre_id) VALUES ?;',
           [values]
         )
       }
