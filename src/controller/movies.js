@@ -1,4 +1,5 @@
 import { MovieModel } from '../model/movies.js'
+import { validateMovie } from '../schemas/movies.js'
 
 export class MovieController {
   static async getAll (req, res) {
@@ -22,8 +23,11 @@ export class MovieController {
 
   // create new movie
   static async create (req, res) {
-    const data = req.body
-    const newMovie = await MovieModel.create({ input: data })
+    const result = validateMovie(req.body)
+
+    if (!result.success) return res.status(400).json({ error: result.error.issues })
+
+    const newMovie = await MovieModel.create({ input: result.data })
 
     res.status(201).json(newMovie)
   }

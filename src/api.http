@@ -1,35 +1,32 @@
-GET http://192.168.1.109:5000/movies
+GET http://192.168.1.100:5000/movies
 
 ###
-GET http://192.168.1.109:5000/movies?genre=DRAMA
+GET http://192.168.1.100:5000/movies?genre=DRAMA
 
 ### create new movie
-POST http://192.168.1.109:5000/movies
+POST http://192.168.1.100:5000/movies
 Content-Type: application/json
 
 {
-  "title": "The Shawshank Redemption",
-  "year": 1994,
-  "director": "Frank Darabont",
-  "duration": 142,
-  "poster": "https://i.ebayimg.com/images/g/4goAAOSwMyBe7hnQ/s-l1200.webp",
-  "genre": ["Drama"],
-  "rate": 9.3
+  "title": "Titanic",
+  "year": 1997,
+  "director": "James Cameron",
+  "duration": 195,
+  "poster": "https://i.pinimg.com/originals/42/42/65/4242658e6f1b0d6322a4a93e0383108b.png",
+  "genre": ["Drama", "Romance"],
+  "rate": 7.8
 }
 
 ### deleted movie
-DELETE http://192.168.1.109:5000/movies/8fe3264a-496f-4241-a390-9821708579be
+DELETE http://192.168.1.100:5000/movies/8fe3264a-496f-4241-a390-9821708579be
 
 ### uptedes movie
-PATCH http://192.168.1.109:5000/movies/b32ce701-a9b8-11ee-8728-50ebf6d2c671
+PATCH http://192.168.1.100:5000/movies/b32ce701-a9b8-11ee-8728-50ebf6d2c671
 Content-Type: application/json
 
 {
-  "year": 2023,
-  "director": "Fran Torres",
-  "genre": [
-    "Drama",
-      "Action",
-      "Crime"
-  ]
+  "rate": "8.4"
 }
+
+### test request
+GET http://192.168.1.100:5000/movies/all

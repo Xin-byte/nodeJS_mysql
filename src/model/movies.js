@@ -27,7 +27,7 @@ export class MovieModel {
       const lowerCaseGenre = genre.toLowerCase()
 
       const [moviesByGenre] = await connection.query(
-        'SELECT id, title, year, director, poster, rate FROM vw_movies_by_genre WHERE genre_name = ?;',
+        'SELECT id, title, year, director, duration, poster, rate FROM vw_movies_by_genre WHERE genre_name = ?;',
         [lowerCaseGenre]
       )
 
@@ -41,7 +41,7 @@ export class MovieModel {
     }
 
     const [result] = await connection.query(
-      'SELECT BIN_TO_UUID(id) id, title, year, director, poster, rate FROM movie;'
+      'SELECT BIN_TO_UUID(id) id, title, year, director, duration, poster, rate FROM movie;'
     )
 
     const genres = await this.getGenre(result)
@@ -53,7 +53,7 @@ export class MovieModel {
 
   static async getById ({ id }) {
     const [result] = await connection.query(
-      `SELECT id, title, year, director, poster, rate 
+      `SELECT id, title, year, director, duration, poster, rate 
       FROM vw_movies_with_dense_rank m
       WHERE m.dense_rank = ? OR  id = ?
       LIMIT 1`,
@@ -121,7 +121,8 @@ export class MovieModel {
   // delete movie
   static async delete ({ id }) {
     const [{ affectedRows: deletedCount }] = await connection.query(
-      'DELETE FROM movie WHERE id = UUID_TO_BIN(?);', [id]
+      'DELETE FROM movie WHERE id = UUID_TO_BIN(?);',
+      [id]
     )
 
     return deletedCount > 0
@@ -141,7 +142,7 @@ export class MovieModel {
 
       if (updated > 0 && genreInput.length !== 0) {
         const genreIds = await this.getGenreIds({ genreInput })
-        const values = genreIds.map(newId => [uuidToBin(id), newId])
+        const values = genreIds.map(genreId => [uuidToBin(id), genreId])
 
         await connection.query(
           'DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?);',
