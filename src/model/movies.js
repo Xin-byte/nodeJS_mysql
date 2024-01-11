@@ -132,6 +132,8 @@ export class MovieModel {
   static async update ({ id, input }) {
     const { genre: genreInput = [], ...rest } = input
 
+    if (rest === undefined) return null
+
     try {
       await connection.beginTransaction()
 

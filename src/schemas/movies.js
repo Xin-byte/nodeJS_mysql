@@ -4,7 +4,7 @@ const movieSchema = z.object({
   title: z.string({
     invalid_type_error: 'Movie title must be a string',
     required_error: 'Movie title is required'
-  }),
+  }).min(1, { message: 'You must enter a Movie title' }),
   year: z.number({
     invalid_type_error: 'Movie year must be a number',
     required_error: 'Movie year is required'
@@ -17,7 +17,7 @@ const movieSchema = z.object({
   poster: z.string().url({
     message: 'Poster must a valid URL'
   }),
-  rate: z.number().min(0).max(10).default(0),
+  rate: z.number().min(0).max(9.9).default(0),
   genre: z.array(
     z.enum(['Action', 'Adventure', 'Crime', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Thriller', 'Sci-Fi', 'Romance']),
     {

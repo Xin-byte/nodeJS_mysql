@@ -22,11 +22,12 @@ Content-Type: application/json
 DELETE http://192.168.1.100:5000/movies/8fe3264a-496f-4241-a390-9821708579be
 
 ### uptedes movie
-PATCH http://192.168.1.100:5000/movies/b32ce701-a9b8-11ee-8728-50ebf6d2c671
+PATCH http://192.168.1.100:5000/movies/d07d2476-d724-4101-9828-9c2ebb0c8829
 Content-Type: application/json
 
 {
-  "rate": "8.4"
+  "rate": 9.9,
+  "title": "C"
 }
 
 ### test request

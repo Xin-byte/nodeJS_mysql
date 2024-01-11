@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import { MovieController } from '../controller/movies.js'
+import { UploadsController } from '../controller/uploads.js'
+import { upload } from '../multer.js'
 
 export const movieRouter = () => {
   const moviesRouter = Router()
@@ -18,6 +20,9 @@ export const movieRouter = () => {
 
   // update movie
   moviesRouter.patch('/:id', MovieController.update)
+
+  // test uploads file
+  moviesRouter.post('/upload', upload.single('file'), UploadsController.uploadFile)
 
   return moviesRouter
 }

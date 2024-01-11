@@ -1,8 +1,18 @@
 import { MovieModel } from '../model/movies.js'
-import { validateMovie } from '../schemas/movies.js'
+import { validateMovie, validatePartialMovie } from '../schemas/movies.js'
+
+const ACCEPTED_ORIGIN = [
+  'http://localhost:5173'
+]
 
 export class MovieController {
   static async getAll (req, res) {
+    const origin = req.header('origin')
+
+    if (ACCEPTED_ORIGIN.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin)
+    }
+
     const { genre } = req.query
     const movies = await MovieModel.getAll({ genre })
 
@@ -52,19 +62,20 @@ export class MovieController {
 
   // update movie
   static async update (req, res) {
-    const { id } = req.params
-    const input = req.body
+    const result = validatePartialMovie(req.body)
 
-    try {
-      const updated = await MovieModel.update({ id, input })
-
-      if (!updated) {
-        return res.status(404).json({ success: false, message: 'Movie not found' })
-      }
-
-      return res.json({ success: true, data: updated })
-    } catch (error) {
-      return res.status(500).json({ success: false, message: 'Internal Sever Error' })
+    if (!result.success) {
+      return res.status(404).json({ success: false, error: result.error.issues })
     }
+
+    const { id } = req.params
+
+    const updated = await MovieModel.update({ id, input: result.data })
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Movie not found' })
+    }
+
+    return res.json({ success: true, data: updated })
   }
 }
