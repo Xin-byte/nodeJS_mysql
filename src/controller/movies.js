@@ -1,17 +1,13 @@
 import { MovieModel } from '../model/movies.js'
 import { validateMovie, validatePartialMovie } from '../schemas/movies.js'
 
-const ACCEPTED_ORIGIN = [
-  'http://localhost:5173'
-]
-
 export class MovieController {
   static async getAll (req, res) {
-    const origin = req.header('origin')
+    // const origin = req.header('origin')
 
-    if (ACCEPTED_ORIGIN.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin)
-    }
+    // if (ACCEPTED_ORIGIN.includes(origin)) {
+    //   res.header('Access-Control-Allow-Origin', origin)
+    // }
 
     const { genre } = req.query
     const movies = await MovieModel.getAll({ genre })

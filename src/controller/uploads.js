@@ -10,8 +10,8 @@ export class UploadsController {
 
     const { filename: fileName, path } = req.file
 
-    const file = await UploadsModel.upload({ fileName, path })
+    const { fileName: name } = await UploadsModel.upload({ fileName, path })
 
-    return res.json(file)
+    return res.json({ url: `http://192.168.1.100:5000/${name}` })
   }
 }
